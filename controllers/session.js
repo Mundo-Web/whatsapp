@@ -1,5 +1,6 @@
 import qrcode from 'qrcode-terminal'
 import ww from 'whatsapp-web.js'
+import WhatsAppController from './whatsapp.js'
 
 const { Client, LocalAuth } = ww
 
@@ -137,6 +138,99 @@ class SessionController {
             // await client.destroy()
             console.log('Cliente desconectado')
         })
+    }
+
+    static verify = async (req, res) => {
+        const { session, redirect_to } = req.query
+
+        const headers = {
+            'Content-Type': 'text/event-stream',
+            Connection: 'keep-alive',
+            'Cache-Control': 'no-cache',
+            'X-Accel-Buffering': 'no'
+        }
+
+        res.writeHead(200, headers)
+        res.write('data: ping\n\n')
+
+        try {
+            let client = global.CLIENTS[session]
+
+            const onMessageCreate = async (event) => {
+                if (event.body == '!revealId') {
+                    event.reply(event.from)
+                    return
+                }
+                if (!event.from.endsWith('@c.us')) return
+                if (!event.body) return
+                if (event.fromMe) return
+
+                const contact_name = event._data.notifyName
+                const contact_phone = event.from.replace('@c.us', '')
+                const message = event.body
+
+                console.log(`Enviando a: ${redirect_to}`)
+                try {
+                    await fetch(redirect_to, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            contact_name,
+                            contact_phone,
+                            message,
+                            source: 'whatsapp-web.js',
+                            origin: 'WhatsApp'
+                        })
+                    })
+                } catch (error) {
+                    console.error(error)
+                }
+            }
+
+            if (!client || (client.instance && !client?.instance?.pupPage._closed)) {
+                client?.instance?.destroy()
+                delete global.CLIENTS[session]
+                console.log(`Eliminando chrome de: ${session}`)
+                client = WhatsAppController.getClient(session)
+
+                client.initialize()
+
+                client.on('qr', (qr) => {
+                    res.write(`data: ${JSON.stringify({ status: 'qr', qr })}\n\n`)
+                })
+                client.on('loading_screen', (percent) => {
+                    res.write(`data: ${JSON.stringify({ status: 'loading_screen', percent })}\n\n`)
+                })
+                client.on('authenticated', () => {
+                    res.write(`data: ${JSON.stringify({ status: 'authenticated' })}\n\n`)
+                    global.CLIENTS[session] = client
+                })
+                client.on('auth_failure', () => {
+                    client.destroy()
+                    res.write(`data: ${JSON.stringify({ status: 'close' })}\n\n`)
+                })
+                client.on('ready', async () => {
+                    res.write(`data: ${JSON.stringify({ status: 'ready', info: client.info })}\n\n`)
+                    global.CLIENTS[session] = client
+                    res.end()
+                })
+                client.on('message_create', onMessageCreate)
+            } else {
+                res.write(`data: ${JSON.stringify({ status: 'ready', info: client.info })}\n\n`)
+                client.on('message_create', onMessageCreate)
+                res.end()
+            }
+
+            req.on('close', () => {
+                if (client?.instance && !client?.instance?.pupPage?._closed) client?.instance?.destroy()
+            })
+        } catch (error) {
+            console.trace(error)
+            res.write('data: {"status": "close"}\n\n')
+            res.end()
+        }
     }
 
     static destroy = async (req, res) => {
