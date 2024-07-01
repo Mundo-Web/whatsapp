@@ -4,15 +4,16 @@ import qrcode from 'qrcode-terminal'
 import ww from 'whatsapp-web.js'
 import apiRoutes from './routes/api.js'
 import webRoutes from './routes/web.js'
+import WhatsAppController from './controllers/whatsapp.js'
 const { Client, LocalAuth } = ww
 
 process.on('unhandledRejection', (reason, promise) => {
-    console.error('Se ha producido un rechazo de promesa no manejado', reason)
+    console.trace('Se ha producido un rechazo de promesa no manejado', reason)
 })
 
 const { json, urlencoded } = express
 const app = express()
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 8080
 
 const corsOptions = {
     origin: '*',
@@ -22,7 +23,8 @@ const corsOptions = {
 global.CLIENT = {}
 global.CLIENTS = {}
 global.QR = ''
-global.remotePath = 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2412.51.html'
+global.remotePath = 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2413.51-beta.html'
+global.dirPath = '/var/www/storage/whatsapp'
 
 app.use(json())
 app.use(urlencoded({ extended: false }))
@@ -35,26 +37,7 @@ app.use('/', webRoutes)
 app.listen(PORT, () => {
     console.log(`WhatsApp de SoDe running on PORT ${PORT}`)
     return
-    const client = new Client({
-        puppeteer: {
-            headless: true,
-            args: [
-                '--no-sandbox',
-                '--disable-setuid-sandbox',
-                '--disable-dev-shm-usage=true',
-                '--disable-accelerated-2d-canvas=true',
-                '--disable-gpu',
-                '--use-gl=egl'
-            ]
-        },
-        authStrategy: new LocalAuth({
-            clientId: 'sode'
-        }),
-        webVersionCache: {
-            type: 'remote',
-            remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2412.51.html',
-        }
-    })
+    const client = WhatsAppController.getClient()
 
     client.initialize()
 
