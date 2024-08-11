@@ -48,7 +48,4 @@ class UtilsController {
   }
 }
 
-const result = UtilsController.getPrefixAndPhone('62856403618882')
-console.log(JSON.stringify(result, null, 2))
-
 export default UtilsController
