@@ -1,11 +1,13 @@
 import cors from 'cors'
 import express from "express"
 import qrcode from 'qrcode-terminal'
-import ww from 'whatsapp-web.js'
+import WhatsAppController from './controllers/whatsapp.js'
 import apiRoutes from './routes/api.js'
 import webRoutes from './routes/web.js'
-import WhatsAppController from './controllers/whatsapp.js'
-const { Client, LocalAuth } = ww
+
+process.on('uncaughtException', (error, origin) => {
+    console.trace('Se ha producido un error no manejado', error)
+})
 
 process.on('unhandledRejection', (reason, promise) => {
     console.trace('Se ha producido un rechazo de promesa no manejado', reason)
@@ -57,6 +59,7 @@ app.listen(PORT, () => {
     client.on('ready', async () => {
         setTimeout(async () => {
             await client.sendMessage('120363023243344066@g.us', 'Desplegado correctamente.\n> Eso espero 👀')
+            console.log('ready to send')
         }, 1000);
         global.CLIENT = client
     })
