@@ -1,5 +1,5 @@
 class MessagesRest {
-  #IP = 'http://127.0.0.1:8000'
+  #IP = 'https://crm.atalaya.pe'
 
   byPhone = async (sessionId, waId) => {
     try {
