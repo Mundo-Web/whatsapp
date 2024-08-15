@@ -4,7 +4,7 @@ class MessagesRest {
   byPhone = async (sessionId, waId) => {
     try {
       const res = await fetch(`${this.#IP}/free/messages/${sessionId}/${waId}`)
-      if (!res.ok) throw new Error('Ocurrio un error al consultar los datos y mensajes del contacto');
+      if (!res.ok) throw new Error(`Ocurrio un error al consultar los datos y mensajes del contacto: ${await res.text()}`);
       const { data, summary } = await res.json()
       return {
         status: true,
