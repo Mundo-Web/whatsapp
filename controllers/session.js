@@ -63,8 +63,10 @@ class SessionController {
           const lastCommand = commands.reverse()[0]
           const collected = p2o(lastCommand, true)
 
+          console.log(collected)
+
           if (collected.nombreCliente && collected.correoCliente && collected.razonDeContacto) {
-            await fetch(redirect_to, {
+            const res = await fetch(redirect_to, {
               method: 'POST',
               headers: {
                 'Authorization': `Bearer ${session}`,
@@ -79,6 +81,7 @@ class SessionController {
                 triggered_by: "Gemini AI"
               })
             })
+            if (!res) throw new Error('No se pudo guardar el lead');
             return
           }
 
