@@ -18,15 +18,16 @@ class MessagesRest {
     }
   }
 
-  save = (session_id, wa_id, message, role = 'Human') => {
+  save = async (session_id, wa_id, message, role = 'Human') => {
     try {
-      fetch(`${this.#IP}/free/messages`, {
+      const res = await fetch(`${this.#IP}/free/messages`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ session_id, role, wa_id, message, })
       })
+      if (!res.ok) throw new Error('No se guardo el mensaje del Bot')
     } catch (error) {
       console.error('Message Error (Guardar):', error.message)
     }
