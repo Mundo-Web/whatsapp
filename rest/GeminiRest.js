@@ -4,6 +4,7 @@ class GeminiRest {
   generateContent = async (apiKey, prompt, messages) => {
     try {
       let instruction = `${prompt}\n\n` + messages.map(({ role, message }) => `${role}: ${message}`).join('\n') + 'AI: '
+      console.log(instruction)
       const res = await fetch(`${this.#IP}:generateContent?key=${apiKey}`, {
         method: 'POST',
         headers: {
