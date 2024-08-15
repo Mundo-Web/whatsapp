@@ -44,10 +44,12 @@ class SessionController {
 
           const { status, data, summary } = await messagesRest.byPhone(session, whatsapp_id)
           if (!status) return
+          const messages = data.sort((a, b) => a.created_at > b.created_at ? 1 : -1)
 
           messagesRest.save(session, whatsapp_id, message)
+          messages.push({ role: 'Human', message })
 
-          const geminiResponse = await geminiRest.generateContent(summary['api-key'], summary.prompt, data.sort((a, b) => a.created_at > b.created_at ? 1 : -1))
+          const geminiResponse = await geminiRest.generateContent(summary['api-key'], summary.prompt, messages)
           if (!geminiResponse) return
 
           messagesRest.save(session, whatsapp_id, geminiResponse, 'AI')
