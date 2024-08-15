@@ -49,9 +49,10 @@ class SessionController {
           messagesRest.save(session, whatsapp_id, message)
           messages.push({ role: 'Human', message })
 
-          const geminiResponse = await geminiRest.generateContent(summary['api-key'], summary.prompt, messages)
+          let geminiResponse = await geminiRest.generateContent(summary['api-key'], summary.prompt, messages)
           if (!geminiResponse) return
 
+          geminiResponse = geminiResponse.replace(/^AI:\s*/, '')
           messagesRest.save(session, whatsapp_id, geminiResponse, 'AI')
 
           const { found, commands, message: cleanMessage } = searchCommand(geminiResponse)
