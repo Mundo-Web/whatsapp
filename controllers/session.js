@@ -1,9 +1,13 @@
 import { randomUUID } from 'crypto'
 import fs from 'fs'
-import ww from 'whatsapp-web.js'
 import WhatsAppController from './whatsapp.js'
+import MessagesRest from '../rest/MessagesRest.js'
+import GeminiRest from '../rest/GeminiRest.js'
+import searchCommand from '../utils/searchCommand.js'
+import p2o from '../utils/p2o.js'
 
-const { Client, LocalAuth } = ww
+const messagesRest = new MessagesRest()
+const geminiRest = new GeminiRest()
 
 class SessionController {
   static verify = async (req, res) => {
@@ -32,26 +36,59 @@ class SessionController {
         if (!event.body) return
         if (event.fromMe) return
 
-        const contact_name = event._data.notifyName
-        const contact_phone = event.from.replace('@c.us', '')
+        const whatsapp_name = event._data.notifyName?.trim() ?? ''
+        const whatsapp_id = event.from.replace('@c.us', '')
         const message = event.body
 
         try {
-          await fetch(redirect_to, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              contact_name,
-              contact_phone,
-              message,
-              source: 'whatsapp-web.js',
-              origin: 'WhatsApp'
+
+          const { status, data, summary } = await messagesRest.byPhone(session, whatsapp_id)
+          if (!status) return
+
+          messagesRest.save(session, whatsapp_id, message)
+
+          const geminiResponse = await geminiRest.generateContent(summary['api-key'], summary.prompt, data.sort((a, b) => a.created_at > b.created_at ? 1 : -1))
+          if (!geminiResponse) return
+
+          messagesRest.save(session, whatsapp_id, geminiResponse, 'AI')
+
+          const { found, commands, message: cleanMessage } = searchCommand(geminiResponse)
+          if (!found) {
+            event.reply(cleanMessage?.trim() || 'Lo siento, parece que no he entendido bien tu solicitud. ¿Podrías intentar formularla de nuevo o indicarme si necesitas ayuda de uno de nuestros ejecutivos?')
+            return
+          }
+
+          const lastCommand = commands.reverse()[0]
+          const collected = p2o(lastCommand, true)
+
+          if (collected.nombreCliente && collected.correoCliente && collected.razonDeContacto) {
+            await fetch(redirect_to, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${session}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                contact_name: `${collected.nombreCliente} ${whatsapp_name ? `(${whatsapp_name})` : ''}`.trim(),
+                contact_phone: whatsapp_id,
+                contact_email: collected.correoCliente,
+                message: collected.razonDeContacto,
+                origin: "WhatsApp",
+                triggered_by: "Gemini AI"
+              })
             })
-          })
+            return
+          }
+
+          const leftFields = []
+          if (!collected.nombreCliente) leftFields.push('Nombre')
+          if (!collected.correoCliente) leftFields.push('Correo')
+          if (!collected.razonDeContacto) leftFields.push('Razon de contacto')
+
+          if (cleanMessage) event.reply(cleanMessage)
+          else event.reply(`Para continuar puedes brindarme los siguientes datos: ${leftFields.join(', ')}`)
         } catch (error) {
-          // console.error(error)
+          console.error(error)
         }
       }
 
