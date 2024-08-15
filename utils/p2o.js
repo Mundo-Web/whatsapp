@@ -11,7 +11,7 @@ const p2o = (pseudo, clean = false) => {
     if (clean) {
       obj[x.field] = x.value?.clean()
     } else {
-      obj[x.field] = x.value?.keep('A-Za-z0-9.,@-_ ')
+      obj[x.field] = x.value?.keep('a-zA-Z0-9 ÃÀÁÄÂÈÉËÊÌÍÏÎÒÓÖÔÙÚÜÛÑÇãàáäâèéëêìíïîòóöôùúüûñç@\-_.,')
     }
   })
 
