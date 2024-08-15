@@ -64,8 +64,6 @@ class SessionController {
           const lastCommand = commands.reverse()[0]
           const collected = p2o(lastCommand)
 
-          console.log(collected)
-
           if (collected.nombreCliente && collected.correoCliente && collected.razonDeContacto) {
             const res = await fetch(redirect_to, {
               method: 'POST',
@@ -82,7 +80,16 @@ class SessionController {
                 triggered_by: "Gemini AI"
               })
             })
-            console.log(await res.text())
+            return
+          }
+
+          if (collected?.asistenciaHumana?.toUpperCase?.() == 'SI') {
+            let message = `Una persona requiere la atencion de un ejecutivo.\nNumero: ${whatsapp_id}`
+            if (collected.nombreCliente) message += `\nNombre: ${collected.nombreCliente}`
+            if (collected.correoCliente) message += `\nCorreo: ${collected.correoCliente}`
+            if (collected.razonDeContacto) message += `\nMensaje: ${collected.razonDeContacto}`
+            messagesRest.help(session, 'Una persona requiere la atencion de un ejecutivo.')
+            event.reply('En un momento te contactara uno de nuestros ejecutivos')
             return
           }
 

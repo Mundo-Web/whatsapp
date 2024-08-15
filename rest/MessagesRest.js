@@ -32,6 +32,21 @@ class MessagesRest {
       console.error('Message Error (Guardar):', error.message)
     }
   }
+
+  help = async (session_id, message) => {
+    try {
+      const res = await fetch(`${this.#IP}/free/messages/help`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ session_id, message, })
+      })
+      if (!res.ok) throw new Error('No se pudo notificar al grupo de ayuda')
+    } catch (error) {
+      console.error('Message Error (Ayuda):', error.message)
+    }
+  }
 }
 
 export default MessagesRest
