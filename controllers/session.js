@@ -88,7 +88,7 @@ class SessionController {
             if (collected.nombreCliente) message += `\nNombre: ${collected.nombreCliente}`
             if (collected.correoCliente) message += `\nCorreo: ${collected.correoCliente}`
             if (collected.razonDeContacto) message += `\nMensaje: ${collected.razonDeContacto}`
-            messagesRest.help(session, 'Una persona requiere la atencion de un ejecutivo.')
+            messagesRest.help(session, message)
             event.reply('En un momento te contactara uno de nuestros ejecutivos')
             return
           }
