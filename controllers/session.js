@@ -89,6 +89,7 @@ class SessionController {
             if (collected.correoCliente) message += `\nCorreo: ${collected.correoCliente}`
             if (collected.razonDeContacto) message += `\nMensaje: ${collected.razonDeContacto}`
             messagesRest.help(session, message)
+            messagesRest.save(session, whatsapp_id, ':STOP', 'AI')
             event.reply('En un momento te contactara uno de nuestros ejecutivos')
             return
           }
