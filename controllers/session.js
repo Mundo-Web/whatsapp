@@ -82,7 +82,7 @@ class SessionController {
                 triggered_by: "Gemini AI"
               })
             })
-            if (!res) throw new Error('No se pudo guardar el lead');
+            console.log(await res.text())
             return
           }
 
