@@ -20,7 +20,7 @@ class MessagesRest {
 
   save = (session_id, wa_id, message, role = 'Human') => {
     try {
-      fetch(`${IP}/free/messages`, {
+      fetch(`${this.#IP}/free/messages`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
