@@ -61,7 +61,7 @@ class SessionController {
           }
 
           const lastCommand = commands.reverse()[0]
-          const collected = p2o(lastCommand, true)
+          const collected = p2o(lastCommand)
 
           console.log(collected)
 
