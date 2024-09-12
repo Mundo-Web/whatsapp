@@ -50,7 +50,25 @@ class SessionController {
           messages.push({ role: 'Human', message })
 
           let geminiResponse = await geminiRest.generateContent(summary['api-key'], summary.prompt, messages)
-          if (!geminiResponse) return
+          if (!geminiResponse) {
+            await fetch(redirect_to, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${session}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                contact_name: `Lead nuevo ${whatsapp_name ? `(${whatsapp_name})` : ''}`.trim(),
+                contact_phone: whatsapp_id,
+                contact_email: 'unknown@atalaya.pe',
+                // message: collected.razonDeContacto,
+                message: 'Sin mensaje',
+                origin: "WhatsApp",
+                triggered_by: "Gemini AI"
+              })
+            })
+            return
+          }
 
           geminiResponse = geminiResponse.replace(/^AI:\s*/, '')
           messagesRest.save(session, whatsapp_id, geminiResponse, 'AI')
@@ -68,7 +86,7 @@ class SessionController {
             collected.nombreCliente && collected.correoCliente
             // && collected.razonDeContacto
           ) {
-            const res = await fetch(redirect_to, {
+            await fetch(redirect_to, {
               method: 'POST',
               headers: {
                 'Authorization': `Bearer ${session}`,
