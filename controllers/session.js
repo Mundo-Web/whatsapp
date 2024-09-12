@@ -42,13 +42,12 @@ class SessionController {
 
         try {
 
-          const { status, data, summary, alreadySent } = await messagesRest.byPhone(session, whatsapp_id, message)
+          const { status, data, summary } = await messagesRest.byPhone(session, whatsapp_id, message)
           if (!status) return
 
-          console.log({ status, data, summary, alreadySent })
-
           if (event.fromMe) {
-            if (!alreadySent) {
+            console.log({ status, data, summary })
+            if (!summary?.alreadySent) {
               messagesRest.save(session, whatsapp_id, ':STOP', 'AI');
             }
             return;

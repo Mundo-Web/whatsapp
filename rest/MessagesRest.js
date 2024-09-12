@@ -15,8 +15,7 @@ class MessagesRest {
       const { data, summary, alreadySent } = await res.json()
       return {
         status: true,
-        data, summary,
-        alreadySent
+        data, summary
       }
     } catch (error) {
       console.error('Message Error:', error.message)
