@@ -44,7 +44,9 @@ class SessionController {
 
           const { status, data, summary, alreadySent } = await messagesRest.byPhone(session, whatsapp_id, message)
           if (!status) return
-          
+
+          console.log({ status, data, summary, alreadySent })
+
           if (event.fromMe) {
             if (!alreadySent) {
               messagesRest.save(session, whatsapp_id, ':STOP', 'AI');
@@ -83,7 +85,7 @@ class SessionController {
 
           const { found, commands, message: cleanMessage } = searchCommand(geminiResponse)
           if (!found) {
-            event.reply(cleanMessage?.trim() || 'Lo siento, parece que no he entendido bien tu solicitud. ¿Podrías intentar formularla de nuevo o indicarme si necesitas ayuda de uno de nuestros ejecutivos?')
+            event.reply(cleanMessage?.replace(/^AI:\s*/, '')?.trim() || 'Lo siento, parece que no he entendido bien tu solicitud. ¿Podrías intentar formularla de nuevo o indicarme si necesitas ayuda de uno de nuestros ejecutivos?')
             return
           }
 
