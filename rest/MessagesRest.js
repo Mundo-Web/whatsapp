@@ -12,7 +12,7 @@ class MessagesRest {
         body: JSON.stringify({ waId, message })
       })
       if (!res.ok) throw new Error(`Ocurrio un error al consultar los datos y mensajes del contacto: ${await res.text()}`);
-      const { data, summary, alreadySent } = await res.json()
+      const { data, summary } = await res.json()
       return {
         status: true,
         data, summary
