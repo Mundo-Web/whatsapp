@@ -78,12 +78,11 @@ class SessionController {
             return
           }
 
-          geminiResponse = geminiResponse.replace(/^AI:\s*/, '')
           messagesRest.save(session, whatsapp_id, geminiResponse, 'AI')
 
           const { found, commands, message: cleanMessage } = searchCommand(geminiResponse)
           if (!found) {
-            event.reply(cleanMessage?.trim() || 'Lo siento, parece que no he entendido bien tu solicitud. ¿Podrías intentar formularla de nuevo o indicarme si necesitas ayuda de uno de nuestros ejecutivos?')
+            event.reply(cleanMessage?.trim()?.replace(/^AI:\s*/, '') || 'Lo siento, parece que no he entendido bien tu solicitud. ¿Podrías intentar formularla de nuevo o indicarme si necesitas ayuda de uno de nuestros ejecutivos?')
             return
           }
 
