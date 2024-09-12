@@ -1,14 +1,22 @@
 class MessagesRest {
   #IP = 'https://crm.atalaya.pe'
 
-  byPhone = async (sessionId, waId) => {
+  byPhone = async (sessionId, waId, message) => {
     try {
-      const res = await fetch(`${this.#IP}/free/messages/${sessionId}/${waId}`)
+      const res = await fetch(`${this.#IP}/free/messages/${sessionId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({ waId, message })
+      })
       if (!res.ok) throw new Error(`Ocurrio un error al consultar los datos y mensajes del contacto: ${await res.text()}`);
-      const { data, summary } = await res.json()
+      const { data, summary, alreadySent } = await res.json()
       return {
         status: true,
-        data, summary
+        data, summary,
+        alreadySent
       }
     } catch (error) {
       console.error('Message Error:', error.message)

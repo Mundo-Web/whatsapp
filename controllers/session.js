@@ -42,8 +42,12 @@ class SessionController {
 
         try {
 
-          const { status, data, summary } = await messagesRest.byPhone(session, whatsapp_id)
+          const { status, data, summary, alreadySent } = await messagesRest.byPhone(session, whatsapp_id, message)
           if (!status) return
+          if (!alreadySent) {
+            messagesRest.save(session, whatsapp_id, ':STOP', 'AI')
+            return
+          }
           const messages = data.sort((a, b) => a.created_at > b.created_at ? 1 : -1)
 
           messagesRest.save(session, whatsapp_id, message)
