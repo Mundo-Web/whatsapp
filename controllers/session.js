@@ -34,7 +34,7 @@ class SessionController {
         }
         if (!event.from.endsWith('@c.us')) return
         if (!event.body) return
-        if (event.fromMe) return
+        // if (event.fromMe) return
 
         const whatsapp_name = event._data.notifyName?.trim() ?? ''
         const whatsapp_id = event.from.replace('@c.us', '')
@@ -44,10 +44,14 @@ class SessionController {
 
           const { status, data, summary, alreadySent } = await messagesRest.byPhone(session, whatsapp_id, message)
           if (!status) return
-          // if (!alreadySent) {
-          //   messagesRest.save(session, whatsapp_id, ':STOP', 'AI')
-          //   return
-          // }
+          
+          if (event.fromMe) {
+            if (!alreadySent) {
+              messagesRest.save(session, whatsapp_id, ':STOP', 'AI');
+            }
+            return;
+          }
+
           const messages = data.sort((a, b) => a.created_at > b.created_at ? 1 : -1)
 
           messagesRest.save(session, whatsapp_id, message)
