@@ -4,7 +4,8 @@ import prefixes from '../json/prefijos.json' assert { type: 'json' }
 class UtilsController {
   static html2image = async (html, {
     isHtml = true,
-    imageType = 'webp'
+    imageType = 'webp',
+    width, height
   }) => {
     const browser = await launch({
       headless: true,
@@ -23,17 +24,21 @@ class UtilsController {
     } else {
       await page.goto(html)
     }
-    const { width, height } = await page.evaluate(() => {
-      document.body.style.height = 'max-content'
-      document.body.style.width = 'max-content'
-      document.body.style.overflow = 'hidden'
-      document.body.style.padding = 0
-      document.body.style.margin = 0
-      return {
-        width: document.body.offsetWidth,
-        height: document.body.offsetHeight
-      }
-    })
+    if (!width || !height) {
+      const newSizes = await page.evaluate(() => {
+        document.body.style.height = 'max-content'
+        document.body.style.width = 'max-content'
+        document.body.style.overflow = 'hidden'
+        document.body.style.padding = 0
+        document.body.style.margin = 0
+        return {
+          width: document.body.offsetWidth,
+          height: document.body.offsetHeight
+        }
+      })
+      width = newSizes.width
+      height = newSizes.height
+    }
     await page.setViewport({ width, height })
     const image = await page.screenshot({
       type: imageType,
@@ -55,12 +60,13 @@ class UtilsController {
   }
 
   static html2imageapi = async (req, res) => {
-    const { url, html, imageType } = req.body;
+    const { url, html, imageType, width, height } = req.body;
     try {
       const isHtml = !url;
       const base64 = await this.html2image(url || html, {
         isHtml,
-        imageType
+        imageType,
+        width, height
       });
 
       // Convertir el base64 a un Buffer
