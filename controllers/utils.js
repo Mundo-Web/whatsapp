@@ -2,7 +2,10 @@ import { launch } from "puppeteer"
 import prefixes from '../json/prefijos.json' assert { type: 'json' }
 
 class UtilsController {
-  static html2image = async (html, isHtml = true) => {
+  static html2image = async (html, {
+    isHtml = true,
+    imageType = 'webp'
+  }) => {
     const browser = await launch({
       headless: true,
       args: [
@@ -33,7 +36,7 @@ class UtilsController {
     })
     await page.setViewport({ width, height })
     const image = await page.screenshot({
-      type: 'webp',
+      type: imageType,
       encoding: 'base64',
       quality: 200
     })
@@ -52,16 +55,19 @@ class UtilsController {
   }
 
   static html2imageapi = async (req, res) => {
-    const { url, html } = req.body;
+    const { url, html, imageType } = req.body;
     try {
       const isHtml = !url;
-      const base64 = await this.html2image(url || html, isHtml);
+      const base64 = await this.html2image(url || html, {
+        isHtml,
+        imageType
+      });
 
       // Convertir el base64 a un Buffer
       const imageBuffer = Buffer.from(base64, 'base64');
 
       // Establecer las cabeceras apropiadas
-      res.setHeader('Content-Type', 'image/webp');
+      res.setHeader('Content-Type', imageType ? `image/${imageType}` : 'image/webp');
       res.setHeader('Content-Length', imageBuffer.length);
 
       // Enviar el buffer de la imagen como respuesta
