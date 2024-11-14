@@ -1,5 +1,5 @@
 class GeminiRest {
-  #IP = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash'
+  #IP = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest'
   #MAX_RETRIES = 3
 
   generateContent = async (apiKey, prompt, messages) => {
