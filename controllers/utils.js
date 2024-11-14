@@ -6,7 +6,7 @@ class UtilsController {
     isHtml = true,
     imageType = 'webp',
     width, height
-  }) => {
+  } = {}) => {
     const browser = await launch({
       headless: true,
       args: [
