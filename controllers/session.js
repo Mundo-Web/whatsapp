@@ -71,7 +71,6 @@ class SessionController {
                 contact_phone: whatsapp_id,
                 contact_email: 'unknown@atalaya.pe',
                 message: collected.objetivoCliente,
-                message: 'Sin mensaje',
                 origin: "WhatsApp",
                 triggered_by: "Gemini AI"
               })
@@ -106,7 +105,6 @@ class SessionController {
                 contact_phone: whatsapp_id,
                 contact_email: collected.correoCliente,
                 message: collected.objetivoCliente,
-                message: 'Sin mensaje',
                 origin: "WhatsApp",
                 triggered_by: "Gemini AI"
               })
