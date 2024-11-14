@@ -70,7 +70,7 @@ class SessionController {
                 contact_name: `Lead nuevo ${whatsapp_name ? `(${whatsapp_name})` : ''}`.trim(),
                 contact_phone: whatsapp_id,
                 contact_email: 'unknown@atalaya.pe',
-                // message: collected.razonDeContacto,
+                message: collected.objetivoCliente,
                 message: 'Sin mensaje',
                 origin: "WhatsApp",
                 triggered_by: "Gemini AI"
@@ -93,7 +93,7 @@ class SessionController {
 
           if (
             collected.nombreCliente && collected.correoCliente
-            // && collected.razonDeContacto
+            && collected.objetivoCliente
           ) {
             await fetch(redirect_to, {
               method: 'POST',
@@ -105,7 +105,7 @@ class SessionController {
                 contact_name: `${collected.nombreCliente} ${whatsapp_name ? `(${whatsapp_name})` : ''}`.trim(),
                 contact_phone: whatsapp_id,
                 contact_email: collected.correoCliente,
-                // message: collected.razonDeContacto,
+                message: collected.objetivoCliente,
                 message: 'Sin mensaje',
                 origin: "WhatsApp",
                 triggered_by: "Gemini AI"
@@ -118,7 +118,7 @@ class SessionController {
             let message = `Una persona requiere la atencion de un ejecutivo.\nNumero: ${whatsapp_id}`
             if (collected.nombreCliente) message += `\nNombre: ${collected.nombreCliente}`
             if (collected.correoCliente) message += `\nCorreo: ${collected.correoCliente}`
-            // if (collected.razonDeContacto) message += `\nMensaje: ${collected.razonDeContacto}`
+            if (collected.objetivoCliente) message += `\nMensaje: ${collected.objetivoCliente}`
             messagesRest.help(session, message)
             messagesRest.save(session, whatsapp_id, ':STOP', 'AI')
             event.reply('En un momento te contactara uno de nuestros ejecutivos')
@@ -128,7 +128,7 @@ class SessionController {
           const leftFields = []
           if (!collected.nombreCliente) leftFields.push('Nombre')
           if (!collected.correoCliente) leftFields.push('Correo')
-          // if (!collected.razonDeContacto) leftFields.push('Razon de contacto')
+          if (!collected.objetivoCliente) leftFields.push('Objetivo digital')
 
           if (cleanMessage) event.reply(cleanMessage)
           else event.reply(`Para continuar puedes brindarme los siguientes datos: ${leftFields.join(', ')}`)
