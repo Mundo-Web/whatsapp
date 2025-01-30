@@ -1,15 +1,29 @@
 import { randomUUID } from 'crypto'
 import fs from 'fs'
-import WhatsAppController from './whatsapp.js'
-import MessagesRest from '../rest/MessagesRest.js'
 import GeminiRest from '../rest/GeminiRest.js'
-import searchCommand from '../utils/searchCommand.js'
+import MessagesRest from '../rest/MessagesRest.js'
 import p2o from '../utils/p2o.js'
+import searchCommand from '../utils/searchCommand.js'
+import WhatsAppController from './whatsapp.js'
 
 const messagesRest = new MessagesRest()
 const geminiRest = new GeminiRest()
 
 class SessionController {
+  static ping = async (req, res) => {
+    const { session } = req.params
+    const client = global.CLIENTS[session]
+
+    try {
+      if (!client) throw new Error('No se encontró una sesión')
+      if (!client.ready) throw new Error('La sesión se encuentra inactiva')
+
+      return res.status(200).json({ status: 200, message: 'Operación correcta' })
+    } catch (error) {
+      return res.status(400).json({ status: 400, message: error.message })
+    }
+  }
+
   static verify = async (req, res) => {
     const { session, redirect_to } = req.query
     const sessionId = randomUUID()
