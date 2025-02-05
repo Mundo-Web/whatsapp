@@ -1,5 +1,6 @@
 class GeminiRest {
-  #IP = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest'
+  #IP = 'https://generativelanguage.googleapis.com/v1beta/models'
+  #MODEL = 'gemini-2.0-flash-lite-preview-02-05'
   #MAX_RETRIES = 3
 
   generateContent = async (apiKey, prompt, messages) => {
@@ -10,7 +11,7 @@ class GeminiRest {
         attempts++;
         let instruction = `${prompt}\n\n` + messages.map(({ role, message }) => `${role}: ${message}`).join('\n') + '\nAI: '
 
-        const res = await fetch(`${this.#IP}:generateContent?key=${apiKey}`, {
+        const res = await fetch(`${this.#IP}/${this.#MODEL}:generateContent?key=${apiKey}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'

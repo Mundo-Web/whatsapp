@@ -49,7 +49,7 @@ class SessionController {
         if (!event.from.endsWith('@c.us')) return
         if (!event.body) return
         // if (event.fromMe) return
-        return
+        // return
 
         const whatsapp_name = event._data.notifyName?.trim() ?? ''
         const whatsapp_id = event.from.replace('@c.us', '')
