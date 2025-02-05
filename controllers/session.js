@@ -107,7 +107,7 @@ class SessionController {
 
           if (
             collected.nombreCliente && collected.correoCliente
-            && collected.objetivoCliente
+            // && collected.objetivoCliente
           ) {
             await fetch(redirect_to, {
               method: 'POST',
@@ -119,7 +119,7 @@ class SessionController {
                 contact_name: `${collected.nombreCliente} ${whatsapp_name ? `(${whatsapp_name})` : ''}`.trim(),
                 contact_phone: whatsapp_id,
                 contact_email: collected.correoCliente,
-                message: collected.objetivoCliente,
+                message: collected.objetivoCliente ?? 'Sin mensaje',
                 origin: "WhatsApp",
                 triggered_by: "Gemini AI"
               })
