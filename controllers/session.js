@@ -85,7 +85,7 @@ class SessionController {
                 contact_name: `Lead nuevo ${whatsapp_name ? `(${whatsapp_name})` : ''}`.trim(),
                 contact_phone: whatsapp_id,
                 contact_email: 'unknown@atalaya.pe',
-                message: collected.objetivoCliente,
+                message: 'Sin mensaje',
                 origin: "WhatsApp",
                 triggered_by: "Gemini AI"
               })
