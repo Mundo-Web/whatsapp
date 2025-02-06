@@ -1,7 +1,7 @@
 class MessagesRest {
   #IP = 'https://crm.atalaya.pe'
 
-  byPhone = async (sessionId, waId, message, whatsapp_name) => {
+  byPhone = async (sessionId, waId, message, whatsapp_name, from_me) => {
     try {
       const res = await fetch(`${this.#IP}/free/messages/${sessionId}`, {
         method: 'POST',
@@ -9,7 +9,7 @@ class MessagesRest {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
-        body: JSON.stringify({ waId, message, contact_name: whatsapp_name })
+        body: JSON.stringify({ waId, message, contact_name: whatsapp_name, from_me })
       })
       if (!res.ok) throw new Error(`Ocurrio un error al consultar los datos y mensajes del contacto: ${await res.text()}`);
       const { data, summary } = await res.json()
