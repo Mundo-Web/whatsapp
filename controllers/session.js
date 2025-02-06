@@ -57,7 +57,7 @@ class SessionController {
 
         try {
 
-          const { status, data, summary } = await messagesRest.byPhone(session, whatsapp_id, message)
+          const { status, data, summary } = await messagesRest.byPhone(session, whatsapp_id, message, whatsapp_name)
           if (!status) return
 
           if (event.fromMe) {
