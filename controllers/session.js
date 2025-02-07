@@ -241,10 +241,10 @@ class SessionController {
       if (!client) throw new Error('No se encontró una sesión')
 
       if (client.ready) {
-        try { await client.logout() } catch (error) {
-          console.log('Error al cerrar sesion:', error.message)
+        try { await client.session.logout() } catch (error) {
+          console.error('Error al cerrar sesion:', error.message)
         }
-        try { await client.destroy() } catch (error) {
+        try { await client.session.destroy() } catch (error) {
           console.error('Error al cerrar el navegador:', error.message)
         }
       }
