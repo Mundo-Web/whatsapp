@@ -235,7 +235,7 @@ class SessionController {
 
   static destroy = async (req, res) => {
     const { session } = req.params
-    const client = global.CLIENTS[session]?.session
+    const client = global.CLIENTS[session]
 
     try {
       if (!client) throw new Error()
