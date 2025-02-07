@@ -238,17 +238,20 @@ class SessionController {
     const client = global.CLIENTS[session]
 
     try {
-      if (!client) throw new Error()
-      const state = await client?.instance?.getState?.()
-      console.log(state);
-      if (state == 'CONNECTED') {
-        await client.logout()
-        await client.destroy()
+      if (!client) throw new Error('No se encontró una sesión')
+
+      if (client.ready == 'CONNECTED') {
+        try { await client.logout() } catch (error) {
+          console.log('Error al cerrar sesion:', error.message)
+        }
+        try { await client.destroy() } catch (error) {
+          console.error('Error al cerrar el navegador:', error.message)
+        }
       }
       delete global.CLIENTS[session]
 
-      fs.rm(`${global.dirPath}/session-${session}`, { recursive: true }, (e) => {
-        console.log(e)
+      fs.rm(`${global.dirPath}/session-${session}`, { recursive: true }, (...props) => {
+        console.log(props)
       })
       res.status(200).end()
     } catch (error) {
