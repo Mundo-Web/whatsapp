@@ -240,6 +240,7 @@ class SessionController {
     try {
       if (!client) throw new Error()
       const state = client?.instance?.getState?.()
+      console.log(state);
       if (state == 'CONNECTED') {
         await client.logout()
         await client.destroy()
