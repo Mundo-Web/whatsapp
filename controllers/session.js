@@ -240,7 +240,7 @@ class SessionController {
     try {
       if (!client) throw new Error('No se encontró una sesión')
 
-      if (client.ready == 'CONNECTED') {
+      if (client.ready) {
         try { await client.logout() } catch (error) {
           console.log('Error al cerrar sesion:', error.message)
         }
