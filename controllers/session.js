@@ -14,11 +14,15 @@ class SessionController {
     const { session } = req.params
     const client = global.CLIENTS[session]
 
+    console.log(Object.keys(global.CLIENTS))
+
+    console.log('Verificando la sesion de: ', session)
+
     try {
       if (!client) throw new Error('No se encontró una sesión')
       if (!client.ready) throw new Error('La sesión se encuentra inactiva')
 
-      return res.status(200).json({ status: 200, message: 'Operación correcta' })
+      return res.status(200).json({ status: 200, message: 'Operación correcta', data: client.session.info })
     } catch (error) {
       return res.status(400).json({ status: 400, message: error.message })
     }
@@ -185,14 +189,16 @@ class SessionController {
           writeAll(`data: ${JSON.stringify({ status: 'authenticated' })}\n\n`)
         })
         finalClient.session.on('auth_failure', (e) => {
-          console.lof('auth_failure', e)
+          console.log('auth_failure', e)
           finalClient.session.destroy()
           writeAll(`data: ${JSON.stringify({ status: 'close' })}\n\n`)
         })
-        finalClient.session.on('disconnected', (reason) => {
+        finalClient.session.on('disconnected', async (reason) => {
           console.log('disconnected', reason)
           if (reason.includes('qrcode') || reason == 'LOGOUT') {
-            finalClient?.session?.destroy?.()
+            try { await client.session.destroy() } catch (error) {
+              console.error('Error al cerrar el navegador:', error.message)
+            }
             finalClient.session = null
             finalClient.active = false
             finalClient.lastQR = null
@@ -223,12 +229,13 @@ class SessionController {
       }
 
       req.on('close', () => {
+        console.log(`Se ha cerrado la conexion con el cliente: ${sessionId}`)
         delete finalClient.responses[sessionId]
         if (finalClient?.instance && !finalClient?.instance?.pupPage?._closed) finalClient?.instance?.destroy()
       })
     } catch (error) {
       console.trace(error)
-      res.write('data: {"status": "close"}\n\n')
+      res.write(`data: ${JSON.stringify({ "status": "close" })}\n\n`) 
       res.end()
     }
   }
