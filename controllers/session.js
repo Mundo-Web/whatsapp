@@ -14,13 +14,19 @@ class SessionController {
     const { session } = req.params
     const client = global.CLIENTS[session]
 
-    console.log(Object.keys(global.CLIENTS))
-
     console.log('Verificando la sesion de: ', session)
 
+    let status = 500
+
     try {
-      if (!client) throw new Error('No se encontró una sesión')
-      if (!client.ready) throw new Error('La sesión se encuentra inactiva')
+      if (!client) {
+        status = 404
+        throw new Error('No se encontró una sesión')
+      }
+      if (!client.ready) {
+        status = 400
+        throw new Error('La sesión se encuentra inactiva')
+      }
 
       return res.status(200).json({ status: 200, message: 'Operación correcta', data: client.session.info })
     } catch (error) {
@@ -235,7 +241,7 @@ class SessionController {
       })
     } catch (error) {
       console.trace(error)
-      res.write(`data: ${JSON.stringify({ "status": "close" })}\n\n`) 
+      res.write(`data: ${JSON.stringify({ "status": "close" })}\n\n`)
       res.end()
     }
   }
