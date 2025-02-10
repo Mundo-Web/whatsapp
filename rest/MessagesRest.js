@@ -1,4 +1,4 @@
-import UtilsController from "../controllers/utils";
+import UtilsController from "../controllers/utils.js";
 
 class MessagesRest {
   #IP = 'https://crm.atalaya.pe'
