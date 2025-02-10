@@ -85,7 +85,7 @@ class SessionController {
           messagesRest.save(session, whatsapp_id, message)
           messages.push({ role: 'Human', message })
 
-          console.log(messages.join('\n'))
+          console.log(messages.map(x => `${x.role}: ${x.message}`).join('\n'))
 
           let geminiResponse = await geminiRest.generateContent(summary['api-key'], summary.prompt, messages)
           if (!geminiResponse) {
