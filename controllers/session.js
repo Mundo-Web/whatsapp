@@ -73,12 +73,13 @@ class SessionController {
           if (!status) return
 
           if (event.fromMe) {
-            console.log({ status, data, summary })
             if (!summary?.alreadySent) {
               messagesRest.save(session, whatsapp_id, ':STOP', 'AI');
             }
             return;
           }
+
+          console.log(summary.client)
 
           const messages = data.sort((a, b) => a.created_at > b.created_at ? 1 : -1)
 
