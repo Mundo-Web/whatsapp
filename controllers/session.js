@@ -254,14 +254,22 @@ class SessionController {
       if (!client) throw new Error('No se encontró una sesión')
 
       if (client.ready) {
-        try { await client.session.logout() } catch (error) {
-          console.error('Error al cerrar sesion:', error.message)
-        }
-        try { await client.session.destroy() } catch (error) {
-          console.error('Error al cerrar el navegador:', error.message)
-        }
+        await new Promise(async (resolve, reject) => {
+          try { await client.session.logout() } catch (error) {
+            console.error('Error al cerrar sesion:', error.message)
+            reject(error)
+          }
+          try { await client.session.destroy() } catch (error) {
+            console.error('Error al cerrar el navegador:', error.message)
+            reject(error)
+          }
+          resolve()
+        }).then(() => {
+          delete global.CLIENTS[session]
+        }).catch(() => {
+          // Manejo de errores si es necesario
+        })
       }
-      delete global.CLIENTS[session]
 
       fs.rm(`${global.dirPath}/session-${session}`, { recursive: true }, (...props) => {
         console.log(props)
