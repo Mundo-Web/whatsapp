@@ -65,6 +65,8 @@ class SessionController {
         const whatsapp_id = event.from.replace('@c.us', '')
         const message = event.body
 
+        console.log(`Esta hablando ${whatsapp_name} (${whatsapp_id}): ${message}`)
+
         try {
 
           const { status, data, summary } = await messagesRest.byPhone(session, whatsapp_id, message, whatsapp_name, event.fromMe)
