@@ -79,7 +79,7 @@ class SessionController {
             return;
           }
 
-          console.log(summary.client)
+          console.log(JSON.stringify(summary.client, null, true))
 
           const messages = data.sort((a, b) => a.created_at > b.created_at ? 1 : -1)
 
