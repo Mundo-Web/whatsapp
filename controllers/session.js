@@ -85,6 +85,8 @@ class SessionController {
           messagesRest.save(session, whatsapp_id, message)
           messages.push({ role: 'Human', message })
 
+          console.log(messages.join('\n'))
+
           let geminiResponse = await geminiRest.generateContent(summary['api-key'], summary.prompt, messages)
           if (!geminiResponse) {
             await fetch(redirect_to, {
