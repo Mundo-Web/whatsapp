@@ -1,7 +1,7 @@
 import UtilsController from "../controllers/utils.js";
 
 class MessagesRest {
-  #IP = 'http://crm.atalaya.pe'
+  #IP = 'https://crm.atalaya.pe'
 
   byPhone = async (sessionId, waId, message, whatsapp_name, from_me) => {
     try {
