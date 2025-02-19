@@ -1,7 +1,7 @@
 import UtilsController from "../controllers/utils.js";
 
 class MessagesRest {
-  #IP = 'https://crm.atalaya.pe'
+  #IP = 'http://crm.atalaya.pe'
 
   byPhone = async (sessionId, waId, message, whatsapp_name, from_me) => {
     try {
@@ -27,7 +27,7 @@ class MessagesRest {
         data, summary
       }
     } catch (error) {
-      console.error('Message Error:', error.message)
+      console.error('Message Error [MessagesRest.byPhone]:', error.message)
       return {
         status: false
       }
