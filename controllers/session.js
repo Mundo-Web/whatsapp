@@ -73,9 +73,9 @@ class SessionController {
           if (!status) return
 
           if (event.fromMe) {
-            if (!summary?.alreadySent) {
-              messagesRest.save(session, event.fromMe ? receiver_whatsapp_id : whatsapp_id, ':STOP', 'AI');
-            }
+            // if (!summary?.alreadySent) {
+            //   messagesRest.save(session, event.fromMe ? receiver_whatsapp_id : whatsapp_id, ':STOP', 'AI');
+            // }
             return;
           }
 
