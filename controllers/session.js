@@ -65,11 +65,12 @@ class SessionController {
         const whatsapp_id = event.from.replace('@c.us', '')
         const message = event.body
 
-        console.log(`Esta hablando ${whatsapp_name} (${whatsapp_id}): ${message}`)
-
         try {
 
           const { status, data, summary } = await messagesRest.byPhone(session, whatsapp_id, message, whatsapp_name, event.fromMe)
+          
+          messagesRest.save(session, whatsapp_id, message)
+
           if (!status) return
 
           if (event.fromMe) {
@@ -79,14 +80,8 @@ class SessionController {
             return;
           }
 
-          console.log(JSON.stringify(summary.client, null, true))
-
           const messages = data.sort((a, b) => a.created_at > b.created_at ? 1 : -1)
-
-          messagesRest.save(session, whatsapp_id, message)
           messages.push({ role: 'Human', message })
-
-          console.log(messages.map(x => `${x.role}: ${x.message}`).join('\n'))
 
           let geminiResponse = await geminiRest.generateContent(summary['api-key'], summary.prompt, messages)
           if (!geminiResponse) {
