@@ -68,9 +68,7 @@ class SessionController {
         try {
 
           const { status, data, summary } = await messagesRest.byPhone(session, whatsapp_id, message, whatsapp_name, event.fromMe)
-          
           messagesRest.save(session, whatsapp_id, message, event.fromMe ? 'Human' : 'AI')
-
           if (!status) return
 
           if (event.fromMe) {
