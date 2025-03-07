@@ -105,7 +105,7 @@ class SessionController {
           }
 
           geminiResponse = geminiResponse.replace(/^AI:\s*/, '')
-          messagesRest.save(session, whatsapp_id, geminiResponse, 'AI')
+          // messagesRest.save(session, whatsapp_id, geminiResponse, 'AI')
 
           const { found, commands, message: cleanMessage } = searchCommand(geminiResponse)
           if (!found) {
