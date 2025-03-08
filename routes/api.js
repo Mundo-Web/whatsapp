@@ -12,6 +12,7 @@ router.delete('/session/:session', SessionController.destroy)
 router.post('/send', WhatsAppController.send)
 router.get('/send/phrase', AutoController.sendPhrase)
 router.get('/qr', WhatsAppController.getQR)
+router.get('/profile/:session/:wa_id', WhatsAppController.getProfile)
 
 router.post('/utils/html2image', UtilsController.html2imageapi)
 

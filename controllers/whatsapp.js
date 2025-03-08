@@ -97,6 +97,61 @@ class WhatsAppController {
   static getQR = async (req, res) => {
     res.json({ qr: global.QR })
   }
+
+  static getProfile = async (req, res) => {
+    const { session, wa_id } = req.params
+    let status = 500;
+    let message = 'Error inesperado';
+
+    try {
+      const client = global.CLIENTS['atalaya-' + session]?.session
+      if (!client) {
+        throw new Error('Client not found');
+      }
+      const waId = wa_id.includes('@') ? wa_id : `${wa_id}@c.us`;
+      const contact = await client.getContactById(waId);
+
+      if (!contact) {
+        throw new Error('Contact not found');
+      }
+
+      // Get profile picture URL
+      const profilePicUrl = await client.getProfilePicUrl(waId);
+
+      if (!profilePicUrl) {
+        throw new Error('Profile picture not available');
+      }
+
+      // Fetch the image and convert to blob
+      const response = await fetch(profilePicUrl);
+      const blob = await response.blob();
+
+      res.set('Content-Type', 'application/octet-stream');
+      res.send(Buffer.from(await blob.arrayBuffer()));
+
+      // status = 200;
+      // message = 'Profile retrieved successfully';
+
+      // res.status(status).json({
+      //   status,
+      //   message,
+      //   data: {
+      //     contact: {
+      //       name: contact.name || contact.pushname || 'Unknown',
+      //       number: contact.number,
+      //       profilePicture: blob
+      //     }
+      //   }
+      // });
+
+    } catch (error) {
+      res.status(400)
+      res.send(error.message)
+      // status = 400;
+      // message = error.message;
+      // res.status(status).json({ status, message });
+    }
+  }
 }
 
 export default WhatsAppController
